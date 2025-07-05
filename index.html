@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe</title>
+  <style>
+    :root {
+      --primary-color: #1e90ff;
+      --secondary-color: #ffffff;
+      --highlight-color: #f1c40f;
+      --text-color: #2c3e50;
+      --win-color: #2ecc71;
+      --gradient-start: #6dd5ed;
+      --gradient-end: #2193b0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color);
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 4rem;
+      margin-bottom: 25px;
+      background: linear-gradient(45deg, var(--primary-color), var(--highlight-color));
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .menu {
+      margin-bottom: 30px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 20px 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      animation: fadeInUp 1s ease-in-out;
+    }
+
+    select, button {
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: var(--text-color);
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    select:hover, button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button {
+      background: linear-gradient(45deg, var(--primary-color), var(--highlight-color));
+      color: white;
+      font-weight: bold;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      grid-template-rows: repeat(3, 120px);
+      gap: 12px;
+      margin-top: 40px;
+      justify-content: center;
+      width: 100%;
+      max-width: 360px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .cell {
+      background: var(--secondary-color);
+      border-radius: 15px;
+      border: 3px solid var(--highlight-color);
+      font-size: 3.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+      animation: pulse 1s infinite alternate;
+    }
+
+    .cell:hover {
+      background: var(--highlight-color);
+      transform: scale(1.1);
+    }
+
+    .status {
+      margin-top: 30px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--secondary-color);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      animation: fadeInDown 2s ease-in-out;
+    }
+
+    .creator {
+      margin-top: 15px;
+      font-size: 1.5rem; /* Augmenté la taille du texte ici */
+      color: var(--text-color);
+      font-weight: 500;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .menu-page, .game-page, .start-page {
+      display: none;
+    }
+
+    .show {
+      display: block;
+    }
+
+    .back-button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: linear-gradient(45deg, var(--primary-color), var(--highlight-color));
+      color: white;
+      font-weight: bold;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 3rem;
+      }
+      .menu {
+        flex-direction: column;
+        padding: 15px;
+      }
+      .board {
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 10px;
+      }
+      .cell {
+        font-size: 3rem;
+        height: 80px;
+        width: 80px;
+      }
+      .status {
+        font-size: 1.4rem;
+      }
+      .back-button {
+        padding: 10px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      .menu {
+        padding: 10px;
+      }
+      .board {
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(3, 90px);
+        gap: 8px;
+      }
+      .cell {
+        font-size: 2.5rem;
+        height: 70px;
+        width: 70px;
+      }
+      .status {
+        font-size: 1.2rem;
+      }
+      .back-button {
+        padding: 8px 18px;
+      }
+    }
+
+    /* Keyframe Animations */
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Page 1 - Menu -->
+  <div class="menu-page show" id="menuPage">
+    <h1>Tic Tac Toe</h1>
+    <div class="menu">
+      <select id="mode">
+        <option value="pvp">Joueur vs Joueur</option>
+        <option value="bot">Joueur vs Bot</option>
+      </select>
+      <select id="difficulty">
+        <option value="easy">Facile</option>
+        <option value="medium">Moyen</option>
+        <option value="hard">Difficile</option>
+      </select>
+      <button onclick="goToGame()">Commencer</button>
+    </div>
+    <div class="creator">Créateur: Hachemmy</div>
+  </div>
+
+  <!-- Page 2 - Start -->
+  <div class="start-page hidden" id="startPage">
+    <h1>Tic Tac Toe</h1>
+    <button onclick="startGame()">Lancer la Partie</button>
+  </div>
+
+  <!-- Page 3 - Jeu -->
+  <div class="game-page hidden" id="gamePage">
+    <div class="board" id="board"></div>
+    <div class="status" id="status"></div>
+    <button class="back-button" onclick="backToMenu()">Retour au Menu</button>
+    <button class="back-button" onclick="startGame()">Rejouer</button>
+  </div>
+
+  <script>
+    let board = Array(9).fill(null);
+    let currentPlayer = 'X';
+    let gameOver = false;
+    let mode = 'pvp';
+    let difficulty = 'easy';
+
+    function goToGame() {
+      mode = document.getElementById('mode').value;
+      difficulty = document.getElementById('difficulty').value;
+      document.getElementById('menuPage').classList.remove('show');
+      document.getElementById('startPage').classList.add('show');
+    }
+
+    function startGame() {
+      document.getElementById('startPage').classList.remove('show');
+      document.getElementById('gamePage').classList.add('show');
+      resetGame();
+      renderBoard();
+    }
+
+    function resetGame() {
+      board = Array(9).fill(null);
+      currentPlayer = 'X';
+      gameOver = false;
+      document.getElementById('status').textContent = `Au tour de ${currentPlayer}`;
+    }
+
+    function renderBoard() {
+      const boardElement = document.getElementById('board');
+      boardElement.innerHTML = '';
+      board.forEach((val, idx) => {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.textContent = val;
+        cell.addEventListener('click', () => handleClick(idx));
+        boardElement.appendChild(cell);
+      });
+    }
+
+    function handleClick(index) {
+      if (board[index] || gameOver) return;
+      board[index] = currentPlayer;
+      checkWinner();
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      renderBoard();
+      if (!gameOver) {
+        document.getElementById('status').textContent = `Au tour de ${currentPlayer}`;
+        if (mode === 'bot' && currentPlayer === 'O') {
+          setTimeout(botMove, 300);
+        }
+      }
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      for (let [a,b,c] of winPatterns) {
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          document.getElementById('status').textContent = `${board[a]} gagne !`;
+          gameOver = true;
+          alert(`${board[a]} gagne !`);
+          return;
+        }
+      }
+      if (!board.includes(null)) {
+        document.getElementById('status').textContent = 'Match nul !';
+        gameOver = true;
+        alert('Match nul !');
+      }
+    }
+
+    function botMove() {
+      let move = getBotMove();
+      if (move !== undefined) {
+        board[move] = 'O';
+        checkWinner();
+        currentPlayer = 'X';
+        renderBoard();
+        if (!gameOver) {
+          document.getElementById('status').textContent = `Au tour de ${currentPlayer}`;
+        }
+      }
+    }
+
+    function getBotMove() {
+      const empty = board.map((val, idx) => val === null ? idx : null).filter(i => i !== null);
+      if (difficulty === 'easy') {
+        return empty[Math.floor(Math.random() * empty.length)];
+      } else if (difficulty === 'medium') {
+        for (let i of empty) {
+          board[i] = 'O';
+          if (isWinner('O')) {
+            board[i] = null;
+            return i;
+          }
+          board[i] = null;
+        }
+        for (let i of empty) {
+          board[i] = 'X';
+          if (isWinner('X')) {
+            board[i] = null;
+            return i;
+          }
+          board[i] = null;
+        }
+        return empty[Math.floor(Math.random() * empty.length)];
+      } else {
+        return bestMove('O').index;
+      }
+    }
+
+    function bestMove(player) {
+      const opponent = player === 'O' ? 'X' : 'O';
+      const empty = board.map((val, idx) => val === null ? idx : null).filter(i => i !== null);
+      let bestScore = player === 'O' ? -Infinity : Infinity;
+      let move;
+
+      for (let i of empty) {
+        board[i] = player;
+        let score = minimax(board, 0, false);
+        board[i] = null;
+        if ((player === 'O' && score > bestScore) || (player === 'X' && score < bestScore)) {
+          bestScore = score;
+          move = i;
+        }
+      }
+      return { index: move };
+    }
+
+    function minimax(newBoard, depth, isMaximizing) {
+      if (isWinner('O')) return 10 - depth;
+      if (isWinner('X')) return depth - 10;
+      if (!newBoard.includes(null)) return 0;
+
+      const empty = newBoard.map((val, idx) => val === null ? idx : null).filter(i => i !== null);
+      if (isMaximizing) {
+        let best = -Infinity;
+        for (let i of empty) {
+          newBoard[i] = 'O';
+          best = Math.max(best, minimax(newBoard, depth + 1, false));
+          newBoard[i] = null;
+        }
+        return best;
+      } else {
+        let best = Infinity;
+        for (let i of empty) {
+          newBoard[i] = 'X';
+          best = Math.min(best, minimax(newBoard, depth + 1, true));
+          newBoard[i] = null;
+        }
+        return best;
+      }
+    }
+
+    function isWinner(player) {
+      const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      return winPatterns.some(([a,b,c]) => board[a] === player && board[b] === player && board[c] === player);
+    }
+
+    function backToMenu() {
+      document.getElementById('gamePage').classList.remove('show');
+      document.getElementById('menuPage').classList.add('show');
+    }
+  </script>
+</body>
+</html>
